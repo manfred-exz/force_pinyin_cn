@@ -3,7 +3,6 @@
 import ctypes
 import ctypes.wintypes
 import time
-import os
 import sys
 
 # --- 定义 Windows API 函数原型 ---
