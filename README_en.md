@@ -1,7 +1,5 @@
 # Force Pinyin CN - Microsoft Pinyin Chinese Mode Enforcer
 
-[中文](./README_cn.md)
-
 Microsoft Pinyin has an annoying issue where the input method may unexpectedly switch to English mode automatically. This forces users through the tedious process of "typing incorrectly - checking input method - confirming Chinese/English mode - finally entering Chinese mode".
 
 This small tool was created to address this issue, specifically optimized for Microsoft Pinyin input method.
