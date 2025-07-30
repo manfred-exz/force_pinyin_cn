@@ -8,9 +8,8 @@
 
 ## 功能特性
 
-- 🎯 **自动切换**: 检测到Microsoft Pinyin英文模式时自动切换到中文模式
-- 📊 **实时监控**: 实时显示输入法状态，包括语言模式、标点状态等
-- 🧠 **智能防护**: 检测到用户主动按Shift切换时，0.5秒内不执行自动切换
+- 检测到Microsoft Pinyin英文模式时自动切换到中文模式
+- 检测到用户主动按Shift切换时，0.5秒内不执行自动切换
 
 ## 使用方法
 
@@ -37,7 +36,7 @@ python force_pinyin_cn.py --test
 ```
 
 ### 退出
-没有编写tray功能，退出请在任务管理器中结束进程
+暂时没有实现托盘tray功能，退出请在任务管理器中结束进程
 
 ## 运行说明
 
@@ -86,20 +85,6 @@ python force_pinyin_cn.py --test
 ```bash
 python -m nuitka --onefile --windows-console-mode=disable --noinclude-dlls=libcrypto-3.dll --windows-icon-from-ico=.\icon.ico force_pinyin_cn.py
 ```
-
-## 注意事项
-
-- 该工具仅在Windows系统上有效
-- 需要Microsoft Pinyin输入法支持
-- 程序需要读取系统输入法状态和键盘按键状态的权限
-- 程序启动时会自动检测是否已有实例运行，如有则自动退出
-- 智能防护功能通过监控Shift键来识别用户主动切换行为
-
-## 故障排除
-
-如果程序无法正常工作，请检查：
-1. 是否安装了Microsoft Pinyin输入法
-2. 输入法是否正常工作
 
 ## 引用感谢
 
