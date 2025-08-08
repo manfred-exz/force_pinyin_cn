@@ -74,7 +74,6 @@ g_mutex_handle = None
 
 # 全局变量用于跟踪Shift键状态
 g_last_shift_time = 0           # 最后一次检测到Shift按下的时间
-g_last_shift_state = False      # 上一次Shift键的状态（用于检测按下事件）
 
 def check_single_instance():
     """
@@ -118,25 +117,29 @@ def cleanup_mutex():
 def check_shift_key_pressed():
     """
     检测Shift键是否被按下，并更新最后按下时间
-    使用GetAsyncKeyState检测按键状态变化
+    使用 GetAsyncKeyState 的高位(0x8000)检测当前按下，低位(0x0001)捕获自上次调用后的“被按过”事件，
+    以避免快速点按在轮询间隔内被漏检。
     """
-    global g_last_shift_time, g_last_shift_state
+    global g_last_shift_time
     
     try:
-        # 检测任意一个Shift键是否被按下
-        # GetAsyncKeyState返回值：最高位表示当前是否按下，次高位表示自上次调用后是否被按过
-        left_shift = user32.GetAsyncKeyState(VK_LSHIFT)
-        right_shift = user32.GetAsyncKeyState(VK_RSHIFT)
-        
-        # 检查是否有任何一个Shift键当前被按下 (最高位为1)
-        shift_pressed = (left_shift & 0x8000) or (right_shift & 0x8000)
-        
-        # 检测按下事件（从未按下变为按下）
-        if shift_pressed and not g_last_shift_state:
+        # GetAsyncKeyState 返回值：
+        # 高位(0x8000) = 当前是否按下；低位(0x0001) = 自上次调用之后是否被按过
+        state_shift  = int(user32.GetAsyncKeyState(VK_SHIFT))  & 0xFFFF
+        state_lshift = int(user32.GetAsyncKeyState(VK_LSHIFT)) & 0xFFFF
+        state_rshift = int(user32.GetAsyncKeyState(VK_RSHIFT)) & 0xFFFF
+
+        # 是否发生过按下事件（捕获快速点按）
+        has_edge = ((state_shift | state_lshift | state_rshift) & 0x0001) != 0
+        # 当前是否按下（任意一个）
+        is_down_now = ((state_shift | state_lshift | state_rshift) & 0x8000) != 0
+
+        # 触发记录：
+        # 1) 快速点按（has_edge）
+        # 2) 初次运行且当前处于按下（确保首次即可生效）
+        if has_edge or (g_last_shift_time == 0 and is_down_now):
             g_last_shift_time = time.time()
             print(f"🔄 检测到Shift键按下 [{time.strftime('%H:%M:%S')}]")
-        
-        g_last_shift_state = shift_pressed
         
     except Exception as e:
         print(f"检测Shift键状态时出错: {e}")
